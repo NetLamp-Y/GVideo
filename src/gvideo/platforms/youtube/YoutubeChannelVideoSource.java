@@ -12,16 +12,16 @@ import java.util.Iterator;
 
 public class YoutubeChannelVideoSource implements VideoSource {
 
-    private final Elements videoIdTags;
+    private final Elements entryTags;
 
     public YoutubeChannelVideoSource(String channelId) throws IOException {
         URL rssLink = new URL("https://www.youtube.com/feeds/videos.xml?channel_id=" + channelId);
         Document htmlDocument = Jsoup.parse(rssLink, 10000);
-        this.videoIdTags = htmlDocument.getElementsByTag("yt:videoId");
+        this.entryTags = htmlDocument.getElementsByTag("entry");
     }
 
     @Override
     public Iterator<Video> iterator() {
-        return new YoutubeVideoSourceTagIterator(videoIdTags);
+        return new YoutubeVideoEntryTagIterator(entryTags);
     }
 }

@@ -7,9 +7,16 @@ import javafx.scene.web.WebView;
 public class YoutubeVideo implements Video {
 
     private final String videoId;
+    private final String title;
 
     public YoutubeVideo(String videoId){
         this.videoId = videoId;
+        this.title = null;
+    }
+
+    public YoutubeVideo(String id, String title) {
+        this.videoId = id;
+        this.title = title;
     }
 
     @Override
@@ -45,8 +52,16 @@ public class YoutubeVideo implements Video {
     @Override
     public Node createNode() {
         WebView webView = new WebView();
-        webView.getEngine().load("https://www.youtube.com/watch?v=" + videoId);
+        webView.getEngine().load("https://www.youtube.com/embed/" + videoId);
         return webView;
+    }
+
+    public String toString(){
+        if(title == null){
+            return super.toString();
+        }else {
+            return this.title;
+        }
     }
 
 }

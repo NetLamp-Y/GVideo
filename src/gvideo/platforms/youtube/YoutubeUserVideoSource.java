@@ -13,17 +13,17 @@ import java.util.Iterator;
 
 public class YoutubeUserVideoSource implements VideoSource {
 
-    private final Elements videoIdTags;
+    private final Elements entryTags;
 
     public YoutubeUserVideoSource(String userId) throws IOException {
         URL rssLink = new URL("https://www.youtube.com/feeds/videos.xml?user=" + userId);
         Document htmlDocument = Jsoup.parse(rssLink, 10000);
-        this.videoIdTags = htmlDocument.getElementsByTag("yt:videoId");
+        this.entryTags = htmlDocument.getElementsByTag("entry");
     }
 
     @Override
     public Iterator<Video> iterator() {
-        return new YoutubeVideoSourceTagIterator(videoIdTags);
+        return new YoutubeVideoEntryTagIterator(entryTags);
     }
 
 }
