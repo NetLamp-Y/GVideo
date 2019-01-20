@@ -2,15 +2,20 @@ package gvideo.gui;
 
 import gvideo.model.Video;
 import gvideo.model.VideoSource;
+import gvideo.model.VideoSourceGenerator;
 import gvideo.platforms.youtube.YoutubeChannelVideoSource;
 import gvideo.platforms.youtube.YoutubeUserVideoSource;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class TestController implements Initializable {
@@ -23,6 +28,12 @@ public class TestController implements Initializable {
 
     @FXML
     private BorderPane videoParent;
+
+
+    private static final VideoSourceGenerator[] generators = {
+
+    };
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -52,6 +63,23 @@ public class TestController implements Initializable {
                     }
                 }
         );
+    }
+
+    public void addSource(ActionEvent event){
+        TextInputDialog inputDialog = new TextInputDialog();
+        inputDialog.setContentText("Gib eine URL ein, wo die gewünschten Videos zu finden sind");
+        Optional<String> optional = inputDialog.showAndWait();
+        if(optional.isPresent()){
+            for(VideoSourceGenerator g : generators){
+                if(g.isMatch(optional.get())){
+                    sourceList.getItems().add(g.generateIfMatch(optional.get()));
+                    return;
+                }
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Video source could not be added.");
+            alert.show();
+        }
     }
 
 }
