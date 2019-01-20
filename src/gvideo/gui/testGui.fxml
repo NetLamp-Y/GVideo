@@ -6,8 +6,9 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gvideo.gui.TestController">
    <center>
-      <SplitPane dividerPositions="0.23578595317725753" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.23578595317725753, 0.5" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <items>
+            <ListView fx:id="sourceList" prefHeight="200.0" prefWidth="200.0" />
             <ListView fx:id="videoList" prefHeight="200.0" prefWidth="200.0" />
             <BorderPane fx:id="videoParent" prefHeight="200.0" prefWidth="200.0" />
          </items>

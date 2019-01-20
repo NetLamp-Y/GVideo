@@ -14,8 +14,10 @@ import java.util.Iterator;
 public class YoutubeUserVideoSource implements VideoSource {
 
     private final Elements entryTags;
+    private final String userId;
 
     public YoutubeUserVideoSource(String userId) throws IOException {
+        this.userId = userId;
         URL rssLink = new URL("https://www.youtube.com/feeds/videos.xml?user=" + userId);
         Document htmlDocument = Jsoup.parse(rssLink, 10000);
         this.entryTags = htmlDocument.getElementsByTag("entry");
@@ -24,6 +26,10 @@ public class YoutubeUserVideoSource implements VideoSource {
     @Override
     public Iterator<Video> iterator() {
         return new YoutubeVideoEntryTagIterator(entryTags);
+    }
+
+    public String toString(){
+        return "YouTube: " + userId;
     }
 
 }

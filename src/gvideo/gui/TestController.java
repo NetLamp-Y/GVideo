@@ -1,6 +1,8 @@
 package gvideo.gui;
 
 import gvideo.model.Video;
+import gvideo.model.VideoSource;
+import gvideo.platforms.youtube.YoutubeChannelVideoSource;
 import gvideo.platforms.youtube.YoutubeUserVideoSource;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,18 +19,31 @@ public class TestController implements Initializable {
     private ListView<Video> videoList;
 
     @FXML
+    private ListView<VideoSource> sourceList;
+
+    @FXML
     private BorderPane videoParent;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             YoutubeUserVideoSource source = new YoutubeUserVideoSource("oplkanal");
-            for(Video v : source){
-                videoList.getItems().add(v);
-            }
+            sourceList.getItems().add(source);
+            sourceList.getItems().add(new YoutubeChannelVideoSource("UCP1JVJUSoUuNxCAgOHQDCrw"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        sourceList.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    videoList.getItems().clear();
+                    if(newValue != null){
+                        for(Video v : newValue){
+                            videoList.getItems().add(v);
+                        }
+                    }
+                }
+        );
 
         videoList.getSelectionModel().selectedItemProperty().addListener(
                 (videoObservable, oldValue, newValue) -> {
