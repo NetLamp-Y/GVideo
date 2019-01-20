@@ -4,7 +4,9 @@ import gvideo.model.Video;
 import gvideo.model.VideoSource;
 import gvideo.model.VideoSourceGenerator;
 import gvideo.platforms.youtube.YoutubeChannelVideoSource;
+import gvideo.platforms.youtube.YoutubeChannelVideoSourceGenerator;
 import gvideo.platforms.youtube.YoutubeUserVideoSource;
+import gvideo.platforms.youtube.YoutubeUserVideoSourceGenerator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,20 +33,13 @@ public class TestController implements Initializable {
 
 
     private static final VideoSourceGenerator[] generators = {
-
+            new YoutubeChannelVideoSourceGenerator(),
+            new YoutubeUserVideoSourceGenerator()
     };
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            YoutubeUserVideoSource source = new YoutubeUserVideoSource("oplkanal");
-            sourceList.getItems().add(source);
-            sourceList.getItems().add(new YoutubeChannelVideoSource("UCP1JVJUSoUuNxCAgOHQDCrw"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         sourceList.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     videoList.getItems().clear();
@@ -72,8 +67,11 @@ public class TestController implements Initializable {
         if(optional.isPresent()){
             for(VideoSourceGenerator g : generators){
                 if(g.isMatch(optional.get())){
-                    sourceList.getItems().add(g.generateIfMatch(optional.get()));
-                    return;
+                    VideoSource source = g.generateIfMatch(optional.get());
+                    if(source != null){
+                        sourceList.getItems().add(source);
+                        return;
+                    }
                 }
             }
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
