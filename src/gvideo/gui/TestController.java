@@ -1,8 +1,6 @@
 package gvideo.gui;
 
-import gvideo.model.Video;
-import gvideo.model.VideoSource;
-import gvideo.model.VideoSourceGenerator;
+import gvideo.model.*;
 import gvideo.platforms.youtube.YoutubeChannelVideoSource;
 import gvideo.platforms.youtube.YoutubeChannelVideoSourceGenerator;
 import gvideo.platforms.youtube.YoutubeUserVideoSource;
@@ -15,6 +13,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -26,11 +26,14 @@ public class TestController implements Initializable {
     private ListView<Video> videoList;
 
     @FXML
-    private ListView<VideoSource> sourceList;
+    private ListView<StoredVideoSource> sourceList;
 
     @FXML
     private BorderPane videoParent;
 
+    private Storage storage;
+
+    private int videoSourceCounter = 0;
 
     private static final VideoSourceGenerator[] generators = {
             new YoutubeChannelVideoSourceGenerator(),
@@ -40,6 +43,9 @@ public class TestController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        storage = new Storage();
+        //TODO daten laden
+
         sourceList.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     videoList.getItems().clear();
@@ -69,7 +75,9 @@ public class TestController implements Initializable {
                 if(g.isMatch(optional.get())){
                     VideoSource source = g.generateIfMatch(optional.get());
                     if(source != null){
-                        sourceList.getItems().add(source);
+                        StoredVideoSource stored = new StoredVideoSource(source, optional.get());
+                        sourceList.getItems().add(stored);
+                        addToStorage(stored);
                         return;
                     }
                 }
@@ -77,6 +85,17 @@ public class TestController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText("Video source could not be added.");
             alert.show();
+        }
+    }
+
+    private void addToStorage(StoredVideoSource stored) {
+        storage.storeString("videoSource" + videoSourceCounter, stored.getUrl());
+        videoSourceCounter++;
+        try {
+            storage.store(new FileOutputStream("./storage.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            //TODO benachrichtigung an benutzer
         }
     }
 
