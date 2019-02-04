@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,6 +36,9 @@ public class TestController implements Initializable {
 
     private int videoSourceCounter = 0;
 
+    private final String FILE_NAME = "./storage.txt";
+    private final String VIDEO_SOURCE_KEY = "videoSource";
+
     private static final VideoSourceGenerator[] generators = {
             new YoutubeChannelVideoSourceGenerator(),
             new YoutubeUserVideoSourceGenerator()
@@ -44,6 +48,7 @@ public class TestController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         storage = new Storage();
+        loadData();
         //TODO daten laden
 
         sourceList.getSelectionModel().selectedItemProperty().addListener(
@@ -66,33 +71,53 @@ public class TestController implements Initializable {
         );
     }
 
+    private void loadData() {
+        try {
+            storage.load(new FileInputStream(FILE_NAME));
+            for(;storage.getString(VIDEO_SOURCE_KEY + videoSourceCounter) != null;videoSourceCounter++){
+                String url = storage.getString(VIDEO_SOURCE_KEY + videoSourceCounter);
+                addSourceByUrl(url, false);
+            }
+        } catch (FileNotFoundException e) {
+
+        }
+    }
+
+    private boolean addSourceByUrl(String url, boolean addToStorage){
+        for(VideoSourceGenerator g : generators){
+            if(g.isMatch(url)){
+                VideoSource source = g.generateIfMatch(url);
+                if(source != null){
+                    StoredVideoSource stored = new StoredVideoSource(source, url);
+                    sourceList.getItems().add(stored);
+                    if(addToStorage){
+                        addToStorage(stored);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void addSource(ActionEvent event){
         TextInputDialog inputDialog = new TextInputDialog();
         inputDialog.setContentText("Gib eine URL ein, wo die gewünschten Videos zu finden sind");
         Optional<String> optional = inputDialog.showAndWait();
         if(optional.isPresent()){
-            for(VideoSourceGenerator g : generators){
-                if(g.isMatch(optional.get())){
-                    VideoSource source = g.generateIfMatch(optional.get());
-                    if(source != null){
-                        StoredVideoSource stored = new StoredVideoSource(source, optional.get());
-                        sourceList.getItems().add(stored);
-                        addToStorage(stored);
-                        return;
-                    }
-                }
+            if(!addSourceByUrl(optional.get(), true)){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Video source could not be added.");
+                alert.show();
             }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Video source could not be added.");
-            alert.show();
         }
     }
 
     private void addToStorage(StoredVideoSource stored) {
-        storage.storeString("videoSource" + videoSourceCounter, stored.getUrl());
+        storage.storeString(VIDEO_SOURCE_KEY + videoSourceCounter, stored.getUrl());
         videoSourceCounter++;
         try {
-            storage.store(new FileOutputStream("./storage.txt"));
+            storage.store(new FileOutputStream(FILE_NAME));
         } catch (IOException e) {
             e.printStackTrace();
             //TODO benachrichtigung an benutzer
