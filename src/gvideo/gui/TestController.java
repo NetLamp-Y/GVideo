@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 
@@ -31,6 +32,9 @@ public class TestController implements Initializable {
 
     @FXML
     private BorderPane videoParent;
+
+    @FXML
+    private SplitPane splitPane;
 
     private Storage storage;
 
@@ -121,6 +125,20 @@ public class TestController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
             //TODO benachrichtigung an benutzer
+        }
+    }
+
+    public void showOrHideLists(){
+        if(splitPane.getItems().contains(videoList)){
+            splitPane.getItems().remove(videoList);
+        }else{
+            splitPane.getItems().add(0, videoList);
+        }
+
+        if(splitPane.getItems().contains(sourceList)){
+            splitPane.getItems().remove(sourceList);
+        }else{
+            splitPane.getItems().add(0, sourceList);
         }
     }
 
