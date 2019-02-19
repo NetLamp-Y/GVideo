@@ -5,6 +5,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gvideo.gui.TestController">
@@ -22,12 +23,18 @@
          <menus>
             <Menu mnemonicParsing="false" text="Sources">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#addSource" text="Add..." />
+                <MenuItem mnemonicParsing="false" onAction="#addSource" text="Add...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="View">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#showOrHideLists" text="Show / Hide lists" />
+                <MenuItem mnemonicParsing="false" onAction="#showOrHideLists" text="Show / Hide lists">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="L" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
               </items>
             </Menu>
          </menus>
